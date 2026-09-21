@@ -7,6 +7,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      # exit code comes from a tracked file, so a one-line commit flips the build
-      # red or green on demand - which is the whole point of this repo.
-      - run: exit "$(cat exitcode)"
+      # Attempt 1 obeys the tracked exitcode file; any RE-RUN passes. That models
+      # a flaky failure fixed by re-running, which is the case the watcher has to
+      # get right: a green re-run must supersede the earlier red attempt.
+      - run: |
+          if [ "${{ github.run_attempt }}" = "1" ]; then
+            echo "attempt 1 -> exitcode file says $(cat exitcode)"
+            exit "$(cat exitcode)"
+          fi
+          echo "attempt ${{ github.run_attempt }} -> pass"
