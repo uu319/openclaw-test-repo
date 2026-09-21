@@ -1,0 +1,12 @@
+name: checks
+on:
+  push:
+  pull_request:
+jobs:
+  verdict:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      # exit code comes from a tracked file, so a one-line commit flips the build
+      # red or green on demand - which is the whole point of this repo.
+      - run: exit "$(cat exitcode)"
